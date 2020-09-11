@@ -1,15 +1,21 @@
-module.exports.initChat = function(application, req, res) {
-    var dataForm = req.body;
+module.exports.iniciaChat = function(application, req, res){
 
-    req.assert('apelido', 'Nome ou apelido é obrigatório').notEmpty();
-    req.assert('apelido', 'Nome ou apelido deve conter entre 3 e 15 caracteres').len(3, 15);
+    var dadosForm = req.body;
 
-    var err = req.validationErrors();
+    req.assert('apelido', 'Nome ou Apelido é obrigatório').notEmpty();
+    req.assert('apelido', 'Nome ou Apelido deve conter entre 3 e 15 caracteres').len(3,15);
 
-    if(err) {
-        res.render("index", {validation : err});
+    var erros = req.validationErrors();
+
+    if(erros){
+        res.render("index", { validacao : erros });
         return;
     }
 
-    res.render("chat");
+    application.get('io').emit(
+        'msgParaCliente',
+        {apelido: dadosForm.apelido, mensagem: ' acabou de entrar no chat!'}
+    )
+
+    res.render('chat');
 }
